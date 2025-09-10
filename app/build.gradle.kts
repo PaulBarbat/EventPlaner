@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.eventplaner"
+    namespace = "com.example.eventplanner"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.eventplaner"
+        applicationId = "com.example.eventplanner"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

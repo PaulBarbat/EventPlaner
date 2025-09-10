@@ -1,4 +1,4 @@
-package com.example.eventplaner
+package com.example.eventplanner
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.eventplaner.ui.theme.EventPlanerTheme
+import com.example.eventplanner.ui.theme.EventPlannerTheme
 import com.example.eventplanner.ui.screens.EventDateScreen
 import com.example.eventplanner.viewmodel.EventDateViewModel
 
@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            EventPlanerTheme {
+            EventPlannerTheme {
                 EventDateScreen(viewModel = viewModel)
             }
         }
@@ -42,7 +42,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    EventPlanerTheme {
+    EventPlannerTheme {
         Greeting("Android")
     }
 }

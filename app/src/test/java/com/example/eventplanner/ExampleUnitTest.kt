@@ -1,4 +1,4 @@
-package com.example.eventplaner
+package com.example.eventplanner
 
 import org.junit.Test
 

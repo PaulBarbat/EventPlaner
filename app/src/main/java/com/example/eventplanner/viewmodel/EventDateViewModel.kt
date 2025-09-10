@@ -13,11 +13,19 @@ class EventDateViewModel : ViewModel() {
     private val _selectedNumber = MutableStateFlow(1)
     val selectedNumber = _selectedNumber.asStateFlow()
 
+    private val _selectedHours = MutableStateFlow(8)
+
+    val selectedHours = _selectedHours.asStateFlow()
+
     fun updateDate(date: LocalDate) {
         _selectedDate.value = date
     }
 
     fun updateNumber(number: Int) {
         _selectedNumber.value = number
+    }
+
+    fun updateHours(hours: Int){
+        _selectedHours.value = hours
     }
 }
