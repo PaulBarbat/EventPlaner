@@ -1,7 +1,9 @@
 package com.example.eventplanner.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
 
@@ -27,5 +29,12 @@ class EventDateViewModel : ViewModel() {
 
     fun updateHours(hours: Int){
         _selectedHours.value = hours
+    }
+
+    private val _distance = MutableStateFlow<Double?>(null)
+    val distance: StateFlow<Double?> = _distance
+
+    fun updateDistance(distanceMeters: Double) {
+        _distance.value = distanceMeters
     }
 }
