@@ -15,7 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.eventplanner.ui.theme.EventPlannerTheme
 import com.example.eventplanner.ui.screens.EventDateScreen
 import com.example.eventplanner.viewmodel.EventDateViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel : EventDateViewModel by viewModels()
