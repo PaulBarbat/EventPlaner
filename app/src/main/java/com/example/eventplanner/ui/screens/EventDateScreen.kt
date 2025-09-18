@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -55,6 +56,13 @@ fun AutocompleteTextField(
             singleLine = true
         )
 
+        LaunchedEffect(expanded) {
+            if (expanded) {
+                // request focus back to the TextField
+                focusRequester.requestFocus()
+            }
+        }
+
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
@@ -95,11 +103,13 @@ fun MapRoutePicker(
 
     val suggestions by viewModel.suggestions.collectAsState()
     val routeDistance by viewModel.distance.collectAsState()
+    var query by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         AutocompleteTextField(
-            query = "",
-            onQueryChange = { query ->
+            query = query,
+            onQueryChange = {
+                query =it
                 if (query.length > 2) {
                     viewModel.searchPlaces(query)
                 }
@@ -114,14 +124,7 @@ fun MapRoutePicker(
             modifier = Modifier.weight(1f),
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
-                when {
-                    endPoint == null -> endPoint = latLng
-                    else -> {
-                        startPoint = latLng
-                        endPoint = null
-                        viewModel.fetchRoute(startPoint, startPoint, apiKey) // reset
-                    }
-                }
+                endPoint = latLng
             }
         ) {
             Marker(state = MarkerState(position = brasovStart), title = "Start")
@@ -165,7 +168,7 @@ fun MapRoutePicker(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NumberDropdown(
-    selectedNumber: Int,
+    selectedHours: Int,
     onNumberSelected: (Int) -> Unit,
     numberList: List<Int> = listOf(2, 4, 6, 8, 10, 12)
 ) {
@@ -177,7 +180,7 @@ fun NumberDropdown(
         modifier = Modifier.fillMaxWidth()
     ) {
         TextField(
-            value = selectedNumber.toString(),
+            value = selectedHours.toString(),
             onValueChange = { },
             readOnly = true,
             label = { Text("Numar de Ore") },
@@ -226,7 +229,7 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(Color(0xFF676937)),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -246,7 +249,7 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
             )
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = Color(0xFF9EC156)
                 ),
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
@@ -276,8 +279,8 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
                     )
 
                     NumberDropdown(
-                        selectedNumber = selectedNumber,
-                        onNumberSelected = { viewModel.updateNumber(it) },
+                        selectedHours = selectedHours,
+                        onNumberSelected = { viewModel.updateHours(it) },
                         numberList = listOf(4, 6, 8)
                     )
 
@@ -286,7 +289,7 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
                     }
 
                     if (showMapPicker) {
-                        MapRoutePicker(viewModel, apiKey = "YOUR_API_KEY")
+                        MapRoutePicker(viewModel, apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk2OWE3ODQyOTRjMTQwMzBiYzk3NjRhNTIzY2Q1ZDEyIiwiaCI6Im11cm11cjY0In0=")
                     }
 
                     Text("Data Evenimentului: $selectedDate")

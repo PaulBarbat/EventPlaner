@@ -46,20 +46,13 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3" // could be replaced with libs.versions.composeCompiler
+        kotlinCompilerExtensionVersion = "1.5.15" // could be replaced with libs.versions.composeCompiler
     }
 }
 
 // --- KAPT JVM options fix for JDK 17 ---
 kapt {
     correctErrorTypes = true
-    javacOptions {
-        option("-parameters")
-        option("-J--add-exports", "jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED")
-        option("-J--add-exports", "jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED")
-        option("-J--add-exports", "jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED")
-        option("-J--add-exports", "jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED")
-    }
 }
 
 dependencies {
@@ -98,6 +91,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    // Optional: Force JavaPoet just to be safe
-    kapt("com.squareup:javapoet:1.13.0")
 }
