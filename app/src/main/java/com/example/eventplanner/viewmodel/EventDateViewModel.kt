@@ -29,12 +29,23 @@ class EventDateViewModel @Inject constructor(
     private val _selectedHours = MutableStateFlow(0)
     val selectedHours: StateFlow<Int> = _selectedHours.asStateFlow()
 
+    private val _formState = MutableStateFlow(0)
+    val formState: StateFlow<Int> = _formState.asStateFlow()
+
     // --- Existing route state ---
     private val _distance = MutableStateFlow<Double?>(null)
     val distance: StateFlow<Double?> = _distance
 
     private val _suggestions = MutableStateFlow<List<Pair<String, LatLng>>>(emptyList())
     val suggestions: StateFlow<List<Pair<String, LatLng>>> = _suggestions
+
+    private val _startPoint = MutableStateFlow<LatLng>(LatLng(45.642680, 25.617590))
+
+    val startPoint: StateFlow<LatLng> = _startPoint
+
+    private val _endPoint = MutableStateFlow<LatLng?>(value = null)
+
+    val endPoint: StateFlow<LatLng?> = _endPoint
 
     // --- Update functions for the screen ---
     fun updateDate(date: LocalDate) {
@@ -47,6 +58,14 @@ class EventDateViewModel @Inject constructor(
 
     fun updateHours(hours: Int) {
         _selectedHours.value = hours
+    }
+
+    fun updateFormState(state: Int) {
+        _formState.value = state
+    }
+
+    fun updateEndPoint(endPoint : LatLng) {
+        _endPoint.value = endPoint
     }
 
     // --- Networking functions ---

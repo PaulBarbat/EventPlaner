@@ -2,8 +2,18 @@ package com.example.eventplanner.ui.screens
 
 import android.app.DatePickerDialog
 import android.util.Log
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -90,9 +101,9 @@ fun MapRoutePicker(
     apiKey: String
 ) {
     val scope = rememberCoroutineScope()
-    val brasovStart = LatLng(45.642680, 25.617590)
-    var startPoint by remember { mutableStateOf(brasovStart) }
-    var endPoint by remember { mutableStateOf<LatLng?>(null) }
+
+    val startPoint by viewModel.startPoint.collectAsState()
+    val endPoint by viewModel.endPoint.collectAsState()
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(
@@ -116,7 +127,7 @@ fun MapRoutePicker(
             },
             suggestions = suggestions,
             onSuggestionClick = { suggestion ->
-                endPoint = suggestion.second
+                viewModel.updateEndPoint(suggestion.second)
             }
         )
 
@@ -124,10 +135,10 @@ fun MapRoutePicker(
             modifier = Modifier.weight(1f),
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
-                endPoint = latLng
+                viewModel.updateEndPoint(latLng)
             }
         ) {
-            Marker(state = MarkerState(position = brasovStart), title = "Start")
+            Marker(state = MarkerState(position = startPoint), title = "Start")
 
             LaunchedEffect(endPoint) {
                 endPoint?.let {
@@ -159,6 +170,9 @@ fun MapRoutePicker(
                 String.format("Distance: %.1f km", it / 1000.0),
                 modifier = Modifier.padding(16.dp)
             )
+        }
+        Button(onClick = { viewModel.updateFormState(3) }) {
+            Text("Continue")
         }
     }
 }
@@ -205,17 +219,18 @@ fun NumberDropdown(
     }
 }
 
-// --- Main EventDateScreen ---
-@OptIn(ExperimentalMaterial3Api::class)
+//FirstForm
+
 @Composable
-fun EventDateScreen(viewModel: EventDateViewModel) {
+fun FirstForm(viewModel: EventDateViewModel)
+{
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedNumber by viewModel.selectedNumber.collectAsState()
     val selectedHours by viewModel.selectedHours.collectAsState()
-    var showMapPicker by remember { mutableStateOf(false) }
+
+    val calendar = Calendar.getInstance()
 
     val context = LocalContext.current
-    val calendar = Calendar.getInstance()
     val datePickerDialog = DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->
@@ -225,7 +240,110 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     )
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Button(onClick = { datePickerDialog.show() }) {
+            Text("Alege Data")
+        }
 
+        OutlinedTextField(
+            value = selectedNumber.toString(),
+            onValueChange = { input ->
+                val number = input.toIntOrNull()
+                if (number != null && number in 1..1000) {
+                    viewModel.updateNumber(number)
+                }
+            },
+            label = { Text("Numar de persoane") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        NumberDropdown(
+            selectedHours = selectedHours,
+            onNumberSelected = { viewModel.updateHours(it) },
+            numberList = listOf(4, 6, 8)
+        )
+
+        Text("Data Evenimentului: $selectedDate")
+        Text("Numar de persoane: $selectedNumber")
+        Text("Ore: $selectedHours")
+
+        Button(onClick = { viewModel.updateFormState(2) }) {
+            Text("Continue")
+        }
+    }
+}
+
+//SecondForm
+@Composable
+fun SecondForm(viewModel: EventDateViewModel)
+{
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Button(onClick = { viewModel.updateFormState(1) }) {
+            Text("Back")
+        }
+        MapRoutePicker(viewModel, apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk2OWE3ODQyOTRjMTQwMzBiYzk3NjRhNTIzY2Q1ZDEyIiwiaCI6Im11cm11cjY0In0=")
+    }
+}
+
+//Services Form
+@Composable
+fun ServicesForm(viewModel: EventDateViewModel)
+{
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .padding(top = 20.dp,bottom = 10.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ){
+            LazyColumn (
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(8.dp)
+            ){
+                items(20) { index ->
+                    Text("Service $index", modifier = Modifier.padding(4.dp))
+                }
+            }
+            LazyColumn (
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.End
+            ){
+                items(20) { index ->
+                    Text("TUKTUK $index", modifier = Modifier.padding(4.dp))
+                }
+            }
+        }
+        Button(onClick = { viewModel.updateFormState(2) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)) {
+            Text("Back")
+        }
+    }
+}
+// --- Main EventDateScreen ---
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@Composable
+fun EventDateScreen(viewModel: EventDateViewModel) {
+    val formState by viewModel.formState.collectAsState()
+    val expanded = (formState>=3)
+    val padding = if (expanded) 0.dp else 16.dp
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -235,66 +353,73 @@ fun EventDateScreen(viewModel: EventDateViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(padding),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_olive),
-                contentDescription = null,
-                tint = androidx.compose.ui.graphics.Color.Unspecified,
-                modifier = Modifier
-                    .size(300.dp)
-                    .padding(bottom = 16.dp),
-            )
+            if(!expanded) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_olive),
+                    contentDescription = null,
+                    tint = androidx.compose.ui.graphics.Color.Unspecified,
+                    modifier = Modifier
+                        .size(300.dp)
+                        .padding(bottom = 16.dp),
+                )
+            }
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFF9EC156)
                 ),
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .wrapContentHeight(),
+                modifier = if (expanded) {
+                        Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    }
+                    else
+                    {
+                        Modifier
+                            .fillMaxWidth(0.9f)
+                            .wrapContentHeight()
+                    },
                 elevation = CardDefaults.cardElevation(8.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Button(onClick = { datePickerDialog.show() }) {
-                        Text("Alege Data")
-                    }
-
-                    OutlinedTextField(
-                        value = selectedNumber.toString(),
-                        onValueChange = { input ->
-                            val number = input.toIntOrNull()
-                            if (number != null && number in 1..1000) {
-                                viewModel.updateNumber(number)
+                AnimatedContent(
+                    targetState = formState,
+                    transitionSpec = {
+                        if (targetState > initialState) {
+                            (slideInVertically { height -> height } + fadeIn()) with
+                            (slideOutVertically { height -> -height } + fadeOut())
+                        } else {
+                            (slideInVertically { height -> -height } + fadeIn()) with
+                            (slideOutVertically { height -> height } + fadeOut())
+                        }
+                    },
+                    label = "FormTransition"
+                ) { step ->
+                    when (step) {
+                        0 -> {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                Text(text = "Welcome to THE TUK")
+                                Button(onClick = { viewModel.updateFormState(1) }) {//TODO change when we have the next screen
+                                    Text("Book Event")
+                                }
                             }
-                        },
-                        label = { Text("Numar de persoane") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    NumberDropdown(
-                        selectedHours = selectedHours,
-                        onNumberSelected = { viewModel.updateHours(it) },
-                        numberList = listOf(4, 6, 8)
-                    )
-
-                    Button(onClick = { showMapPicker = true }) {
-                        Text("Pick Route")
+                        }
+                        1 -> FirstForm (
+                            viewModel = viewModel
+                        )
+                        2 -> SecondForm (
+                            viewModel = viewModel
+                        )
+                        3 -> ServicesForm (
+                            viewModel = viewModel
+                        )
                     }
 
-                    if (showMapPicker) {
-                        MapRoutePicker(viewModel, apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk2OWE3ODQyOTRjMTQwMzBiYzk3NjRhNTIzY2Q1ZDEyIiwiaCI6Im11cm11cjY0In0=")
-                    }
-
-                    Text("Data Evenimentului: $selectedDate")
-                    Text("Numar de persoane: $selectedNumber")
-                    Text("Ore: $selectedHours")
                 }
             }
         }
