@@ -40,6 +40,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Calendar
+import com.example.eventplanner.BuildConfig
 
 // --- AutocompleteTextField ---
 @Composable
@@ -289,7 +290,7 @@ fun SecondForm(viewModel: EventDateViewModel)
         Button(onClick = { viewModel.updateFormState(1) }) {
             Text("Back")
         }
-        MapRoutePicker(viewModel, apiKey = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk2OWE3ODQyOTRjMTQwMzBiYzk3NjRhNTIzY2Q1ZDEyIiwiaCI6Im11cm11cjY0In0=")
+        MapRoutePicker(viewModel, apiKey = BuildConfig.ORS_KEY)
     }
 }
 
