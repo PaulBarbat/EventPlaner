@@ -3,7 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
+    kotlin("plugin.serialization") version libs.versions.kotlin.get()
 }
 
 android {
@@ -47,9 +49,6 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15" // could be replaced with libs.versions.composeCompiler
-    }
 }
 
 // --- KAPT JVM options fix for JDK 17 ---
@@ -81,6 +80,8 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.espresso.core)
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 
@@ -92,6 +93,9 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    //json
+    implementation(libs.kotlinx.serialization.json)
 
 }
 

@@ -1,12 +1,17 @@
 package com.example.eventplanner.viewmodel
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.eventplanner.data.ServiceEntry
+import com.example.eventplanner.data.ServicesConfig
+import com.example.eventplanner.data.ServicesConfigLoader
 import com.example.eventplanner.data.remote.ors.ORSRequest
 import com.example.eventplanner.data.repository.EventRepository
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventDateViewModel @Inject constructor(
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    @ApplicationContext private val appContext : Context
 ) : ViewModel() {
 
     // --- NEW state for event form ---
@@ -47,6 +53,46 @@ class EventDateViewModel @Inject constructor(
 
     val endPoint: StateFlow<LatLng?> = _endPoint
 
+    private val _config = MutableStateFlow<ServicesConfig?>(null)
+    val config: StateFlow<ServicesConfig?> = _config
+
+    private val _imageRes = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val imageRes: StateFlow<Map<String, Int>> = _imageRes
+
+    private val _selectedServiceId = MutableStateFlow<String?>(null)
+    val selectedServiceId : StateFlow<String?> = _selectedServiceId
+
+    private val _selectedImage = MutableStateFlow<String?>(null)
+    val selectedImage: StateFlow<String?> = _selectedImage
+
+    init {
+        viewModelScope.launch {
+            val (config, resMap) = ServicesConfigLoader.load(context = appContext)
+            _config.value = config
+            _imageRes.value = resMap
+        }
+    }
+
+    fun services(): List<ServiceEntry> = _config.value?.services.orEmpty()
+    fun allImages(): List<String> = _config.value?.allImages.orEmpty()
+    fun resIdOf(name: String): Int = _imageRes.value[name] ?: 0
+
+    fun allowedImageNamesFor(serviceId: String): List<String> =
+        _config.value?.services?.firstOrNull { it.id == serviceId }?.imageResourceNames.orEmpty()
+
+    fun selectService(id: String) {
+        if (_selectedServiceId.value != id) {
+            _selectedServiceId.value = id
+            val allowed = allowedImageNamesFor(id).toSet()
+            if (_selectedImage.value !in allowed) _selectedImage.value = null
+        }
+    }
+
+    fun toggleImage(name: String) {
+        val svc = _selectedServiceId.value ?: return
+        if (name !in allowedImageNamesFor(svc)) return
+        _selectedImage.value = if (_selectedImage.value == name) null else name
+    }
     // --- Update functions for the screen ---
     fun updateDate(date: LocalDate) {
         _selectedDate.value = date

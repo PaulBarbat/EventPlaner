@@ -12,8 +12,10 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,6 +43,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Calendar
 import com.example.eventplanner.BuildConfig
+import com.example.eventplanner.ui.SelectableImageTile
 
 // --- AutocompleteTextField ---
 @Composable
@@ -298,6 +301,15 @@ fun SecondForm(viewModel: EventDateViewModel)
 @Composable
 fun ServicesForm(viewModel: EventDateViewModel)
 {
+    val services = viewModel.services()
+    val allImages = viewModel.allImages()
+    val selectedServiceId by viewModel.selectedServiceId.collectAsState()
+    val selectedImage by viewModel.selectedImage.collectAsState()
+
+    val allowed = selectedServiceId
+        ?.let { viewModel.allowedImageNamesFor(it).toSet()}
+        ?: emptySet()
+
     Column(
         modifier = Modifier.fillMaxSize()
             .padding(top = 20.dp,bottom = 10.dp),
@@ -308,16 +320,27 @@ fun ServicesForm(viewModel: EventDateViewModel)
                 .weight(1f)
                 .fillMaxWidth()
         ){
+            //Serevices
             LazyColumn (
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
                     .padding(8.dp)
             ){
-                items(20) { index ->
-                    Text("Service $index", modifier = Modifier.padding(4.dp))
+                items(services, key = { it.id }) {svc ->
+                    val isSelected = svc.id == selectedServiceId
+                    ListItem(
+                        headlineContent = { Text(svc.displayName)},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                            .clickable { viewModel.selectService(svc.id)},
+                        tonalElevation = if (isSelected) 4.dp else 0.dp
+                    )
+                    Divider()
                 }
             }
+            //Images
             LazyColumn (
                 modifier = Modifier
                     .weight(1f)
@@ -325,8 +348,21 @@ fun ServicesForm(viewModel: EventDateViewModel)
                     .padding(8.dp),
                 horizontalAlignment = Alignment.End
             ){
-                items(20) { index ->
-                    Text("TUKTUK $index", modifier = Modifier.padding(4.dp))
+                items(allImages, key = { it }) { imageName ->
+                    val resId = viewModel.resIdOf(imageName)
+                    val enabled = imageName in allowed && selectedServiceId != null
+                    val selected = imageName == selectedImage
+
+                    SelectableImageTile(
+                        name = imageName,
+                        resId = resId,
+                        selected = selected,
+                        enabled = enabled,
+                        onClick = {viewModel.toggleImage(imageName)},
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    )
                 }
             }
         }
