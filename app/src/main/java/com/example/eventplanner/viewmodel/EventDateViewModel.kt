@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.data.ServiceEntry
 import com.example.eventplanner.data.ServicesConfig
 import com.example.eventplanner.data.ServicesConfigLoader
+import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
 import com.example.eventplanner.data.remote.ors.ORSRequest
 import com.example.eventplanner.data.repository.EventRepository
 import com.google.android.gms.maps.model.LatLng
@@ -65,11 +66,22 @@ class EventDateViewModel @Inject constructor(
     private val _selectedImage = MutableStateFlow<String?>(null)
     val selectedImage: StateFlow<String?> = _selectedImage
 
+    private val _configOutdated = MutableStateFlow(false)
+    val configOutdated: StateFlow<Boolean> = _configOutdated
+
     init {
         viewModelScope.launch {
-            val (config, resMap) = ServicesConfigLoader.load(context = appContext)
+            val (config, isLocal) = ServicesRemoteLoader.loadConfig(appContext)
+            _configOutdated.value = isLocal
             _config.value = config
-            _imageRes.value = resMap
+            _imageRes.value = config?.allImages?.associateWith { name ->
+                appContext.resources.getIdentifier(name, "drawable", appContext.packageName)
+                    .takeIf { it !=0 } ?: error("Drawable not found for name : $name")
+            } ?: emptyMap()
+
+            if (isLocal) {
+                Log.w("Config", "Using local cached services config, data may be uotdated.")
+            }
         }
     }
 

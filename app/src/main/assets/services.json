@@ -19,11 +19,6 @@
       "id": "icecream",
       "displayName": "Ice Cream Bar",
       "imageResourceNames": ["t_guido", "t_luigi", "t_mario"]
-    },
-    {
-      "id": "decor",
-      "displayName": "Decor",
-      "imageResourceNames": ["t_alfonso", "t_giuseppe", "t_guido", "t_luigi", "t_mario"]
     }
   ],
   "allImages": ["t_alfonso", "t_giuseppe", "t_guido", "t_luigi", "t_mario"]

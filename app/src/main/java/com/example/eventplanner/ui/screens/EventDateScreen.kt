@@ -309,6 +309,7 @@ fun ServicesForm(viewModel: EventDateViewModel)
     val allowed = selectedServiceId
         ?.let { viewModel.allowedImageNamesFor(it).toSet()}
         ?: emptySet()
+    val outdated by viewModel.configOutdated.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -366,6 +367,14 @@ fun ServicesForm(viewModel: EventDateViewModel)
                 }
             }
         }
+        if (outdated){
+            Text(
+                "Prices may be outdated",
+                color = Color.Red,
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
         Button(onClick = { viewModel.updateFormState(2) },
             modifier = Modifier
                 .fillMaxWidth()
