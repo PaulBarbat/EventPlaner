@@ -2,11 +2,13 @@ package com.example.eventplanner.viewmodel
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.data.ServiceEntry
 import com.example.eventplanner.data.ServicesConfig
 import com.example.eventplanner.data.ServicesConfigLoader
+import com.example.eventplanner.data.TuktukEntry
 import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
 import com.example.eventplanner.data.remote.ors.ORSRequest
 import com.example.eventplanner.data.repository.EventRepository
@@ -69,14 +71,17 @@ class EventDateViewModel @Inject constructor(
     private val _configOutdated = MutableStateFlow(false)
     val configOutdated: StateFlow<Boolean> = _configOutdated
 
+    private val _selectedServices = mutableStateListOf<Pair<ServiceEntry, TuktukEntry>>()
+    val selectedServices: List<Pair<ServiceEntry, TuktukEntry>> = _selectedServices
+
     init {
         viewModelScope.launch {
             val (config, isLocal) = ServicesRemoteLoader.loadConfig(appContext)
             _configOutdated.value = isLocal
             _config.value = config
-            _imageRes.value = config?.allImages?.associateWith { name ->
-                appContext.resources.getIdentifier(name, "drawable", appContext.packageName)
-                    .takeIf { it !=0 } ?: error("Drawable not found for name : $name")
+            _imageRes.value = config?.allImages?.associate { tuktuk ->
+                tuktuk.id to (appContext.resources.getIdentifier(tuktuk.id, "drawable", appContext.packageName)
+                    .takeIf { it !=0 } ?: error("Drawable not found for name : $tuktuk.id"))
             } ?: emptyMap()
 
             if (isLocal) {
@@ -86,7 +91,7 @@ class EventDateViewModel @Inject constructor(
     }
 
     fun services(): List<ServiceEntry> = _config.value?.services.orEmpty()
-    fun allImages(): List<String> = _config.value?.allImages.orEmpty()
+    fun allImages(): List<TuktukEntry> = _config.value?.allImages.orEmpty()
     fun resIdOf(name: String): Int = _imageRes.value[name] ?: 0
 
     fun allowedImageNamesFor(serviceId: String): List<String> =
@@ -104,6 +109,18 @@ class EventDateViewModel @Inject constructor(
         val svc = _selectedServiceId.value ?: return
         if (name !in allowedImageNamesFor(svc)) return
         _selectedImage.value = if (_selectedImage.value == name) null else name
+    }
+
+    fun saveSelectedService() {
+        val serviceID = _selectedServiceId.value
+        val imageName = _selectedImage.value
+        val service = _config.value?.services?.firstOrNull { it.id == serviceID}
+        val tuktuk = _config.value?.allImages?.firstOrNull { it.id == imageName}
+        if(service!= null && tuktuk != null) {
+            _selectedServices.add(service to tuktuk)
+            _selectedServiceId.value=null
+            _selectedImage.value=null
+        }
     }
     // --- Update functions for the screen ---
     fun updateDate(date: LocalDate) {

@@ -15,9 +15,16 @@ data class ServiceEntry(
 
 @SuppressLint("UnsafeOptInUsageError")
 @Serializable
+data class TuktukEntry(
+    val id: String,
+    val displayName: String
+)
+
+@SuppressLint("UnsafeOptInUsageError")
+@Serializable
 data class ServicesConfig(
     val services: List<ServiceEntry>,
-    val allImages: List<String>
+    val allImages: List<TuktukEntry>
 )
 
 object ServicesConfigLoader {
@@ -27,9 +34,9 @@ object ServicesConfigLoader {
         val text = context.assets.open("services.json").bufferedReader().use { it.readText()}
         val config = json.decodeFromString<ServicesConfig>(text)
 
-        val nameToResId = config.allImages.associateWith { name ->
-            context.resources.getIdentifier(name, "drawable", context.packageName).takeIf { it !=0}
-                ?: error("Drawable not found for name: $name")
+        val nameToResId = config.allImages.associate { tuktuk ->
+            tuktuk.id to (context.resources.getIdentifier(tuktuk.id, "drawable", context.packageName).takeIf { it !=0}
+                ?: error("Drawable not found for name: $tuktuk.id"))
         }
         return config to nameToResId
     }
