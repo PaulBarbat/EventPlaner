@@ -97,6 +97,8 @@ dependencies {
     //json
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.androidx.navigation.compose)
+
 }
 
 secrets {
