@@ -9,8 +9,10 @@ import com.example.eventplanner.data.ServiceEntry
 import com.example.eventplanner.data.ServicesConfig
 import com.example.eventplanner.data.ServicesConfigLoader
 import com.example.eventplanner.data.TuktukEntry
+import com.example.eventplanner.data.models.Booking
 import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
 import com.example.eventplanner.data.remote.ors.ORSRequest
+import com.example.eventplanner.data.repository.BookingRepository
 import com.example.eventplanner.data.repository.EventRepository
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,13 +22,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class EventDateViewModel @Inject constructor(
     private val repository: EventRepository,
+    private val bookingRepository: BookingRepository,
     @ApplicationContext private val appContext : Context
 ) : ViewModel() {
+
+    private val TAG = "ViewModel"
 
     // --- NEW state for event form ---
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
@@ -173,6 +179,21 @@ class EventDateViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e("Photon", "Failed to search places", e)
             }
+        }
+    }
+
+    fun saveBooking() {
+        viewModelScope.launch {
+            val booking = Booking(
+                id = UUID.randomUUID().toString(),
+                date = selectedDate.value?.toString() ?: "Unknown",
+                numberOfPeople = selectedNumber.value,
+                hours = selectedHours.value,
+                routeDistance = distance.value,
+                selectedServices = selectedServices.map { it.first.id to it.second.displayName }
+            )
+            bookingRepository.saveBooking(booking)
+            Log.i(TAG, "Booking saved: $booking")
         }
     }
 }
