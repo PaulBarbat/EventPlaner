@@ -11,13 +11,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.eventplanner.data.models.Booking
+import com.example.eventplanner.ui.elements.BookingCalendarElement
 import com.example.eventplanner.ui.elements.NumberDropdownElement
 import com.example.eventplanner.viewmodel.EventDateViewModel
 import java.time.LocalDate
@@ -31,19 +37,9 @@ fun EventDataScreen(viewModel: EventDateViewModel,
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedNumber by viewModel.selectedNumber.collectAsState()
     val selectedHours by viewModel.selectedHours.collectAsState()
+    var showCalendar by remember { mutableStateOf(false) }
+    val bookings by viewModel.bookings.collectAsState()
 
-    val calendar = Calendar.getInstance()
-
-    val context = LocalContext.current
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            viewModel.updateDate(LocalDate.of(year, month + 1, dayOfMonth))
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -52,7 +48,7 @@ fun EventDataScreen(viewModel: EventDateViewModel,
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically){
 
-            Button(onClick = { datePickerDialog.show() }) {
+            Button(onClick = { showCalendar = true}) {
                 Text("Alege Data")
             }
             Button(onClick = { viewBookings() }) {
@@ -60,6 +56,16 @@ fun EventDataScreen(viewModel: EventDateViewModel,
             }
         }
 
+        if(showCalendar) {
+            BookingCalendarElement(
+                bookings = bookings,
+                selectedDate = selectedDate,
+                onDateSelected = { date ->
+                    viewModel.updateDate(date)
+                    showCalendar = false // hide after picking
+                }
+            )
+        }
         OutlinedTextField(
             value = selectedNumber.toString(),
             onValueChange = { input ->

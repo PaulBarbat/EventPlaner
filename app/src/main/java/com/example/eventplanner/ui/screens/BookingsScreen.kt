@@ -22,12 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.eventplanner.ui.elements.BookingItem
-import com.example.eventplanner.viewmodel.BookingListViewModel
+import com.example.eventplanner.viewmodel.EventDateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingsScreen(
-    viewModel: BookingListViewModel = hiltViewModel(),
+    viewModel: EventDateViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
     val bookings by viewModel.bookings.collectAsState()

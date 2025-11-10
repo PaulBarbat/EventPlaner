@@ -80,7 +80,12 @@ class EventDateViewModel @Inject constructor(
     private val _selectedServices = mutableStateListOf<Pair<ServiceEntry, TuktukEntry>>()
     val selectedServices: List<Pair<ServiceEntry, TuktukEntry>> = _selectedServices
 
+
+    private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
+    val bookings: StateFlow<List<Booking>> = _bookings
+
     init {
+        loadBookings()
         viewModelScope.launch {
             val (config, isLocal) = ServicesRemoteLoader.loadConfig(appContext)
             _configOutdated.value = isLocal
@@ -194,6 +199,19 @@ class EventDateViewModel @Inject constructor(
             )
             bookingRepository.saveBooking(booking)
             Log.i(TAG, "Booking saved: $booking")
+        }
+    }
+
+    fun loadBookings() {
+        viewModelScope.launch {
+            _bookings.value = bookingRepository.getAllBookings()
+        }
+    }
+
+    fun deleteBooking(id: String) {
+        viewModelScope.launch {
+            bookingRepository.deleteBooking(id)
+            loadBookings()
         }
     }
 }

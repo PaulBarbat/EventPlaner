@@ -5,7 +5,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.eventplanner.viewmodel.BookingListViewModel
 import com.example.eventplanner.viewmodel.EventDateViewModel
 
 @Composable
@@ -24,9 +23,9 @@ fun AppNavigation() {
             )
         }
         composable("bookings") {
-            val bookingListViewModel: BookingListViewModel = hiltViewModel()
+            val viewModel: EventDateViewModel = hiltViewModel()
             BookingsScreen(
-                viewModel = bookingListViewModel,
+                viewModel = viewModel,
                 onBack = { navController.popBackStack()}
             )
         }
