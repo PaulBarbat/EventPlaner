@@ -31,8 +31,7 @@ import java.util.Calendar
 
 
 @Composable
-fun EventDataScreen(viewModel: EventDateViewModel,
-                    viewBookings:() -> Unit)
+fun EventDataScreen(viewModel: EventDateViewModel)
 {
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedNumber by viewModel.selectedNumber.collectAsState()
@@ -44,15 +43,13 @@ fun EventDataScreen(viewModel: EventDateViewModel,
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(modifier= Modifier.padding(6.dp),
+        Row(modifier= Modifier.padding(6.dp)
+            .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically){
 
             Button(onClick = { showCalendar = true}) {
                 Text("Alege Data")
-            }
-            Button(onClick = { viewBookings() }) {
-                Text("My Bookings")
             }
         }
 
@@ -90,7 +87,7 @@ fun EventDataScreen(viewModel: EventDateViewModel,
         Text("Numar de persoane: $selectedNumber")
         Text("Ore: $selectedHours")
 
-        Button(onClick = { viewModel.updateFormState(2) }) {
+        Button(onClick = { viewModel.updateFormState(1) }) {
             Text("Continue")
         }
     }

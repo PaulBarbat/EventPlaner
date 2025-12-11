@@ -102,7 +102,7 @@ fun MapRoutePickerElement(
                 modifier = Modifier.padding(16.dp)
             )
         }
-        Button(onClick = { viewModel.updateFormState(3) }) {
+        Button(onClick = { viewModel.updateFormState(2) }) {
             Text("Continue")
         }
     }

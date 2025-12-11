@@ -27,20 +27,14 @@ import com.example.eventplanner.viewmodel.EventDateViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookingsScreen(
-    viewModel: EventDateViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    viewModel: EventDateViewModel = hiltViewModel()
 ) {
     val bookings by viewModel.bookings.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("My Bookings") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.Delete, contentDescription = "Back") // Replace icon if needed
-                    }
-                }
+                title = { Text("My Bookings") }
             )
         }
     ) { padding ->

@@ -20,8 +20,7 @@ import com.example.eventplanner.viewmodel.EventDateViewModel
 
 
 @Composable
-fun ConfirmationScreen(viewModel: EventDateViewModel,
-                       viewBookings:() -> Unit)
+fun ConfirmationScreen(viewModel: EventDateViewModel)
 {
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedNumber by viewModel.selectedNumber.collectAsState()
@@ -34,7 +33,7 @@ fun ConfirmationScreen(viewModel: EventDateViewModel,
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Button(onClick = { viewModel.updateFormState(3) }) {
+        Button(onClick = { viewModel.updateFormState(2) }) {
             Text("Back")
         }
 
@@ -65,12 +64,12 @@ fun ConfirmationScreen(viewModel: EventDateViewModel,
                     Divider()
                 }
             }
-            Button(onClick = { viewModel.saveBooking() }) {
+            Button(onClick = {
+                viewModel.saveBooking()
+                viewModel.updateFormState(0)
+            }) {
                 Text("Confirm Booking")
             }
-        }
-        Button(onClick = { viewBookings() }) {
-            Text("Bookings")
         }
     }
 }

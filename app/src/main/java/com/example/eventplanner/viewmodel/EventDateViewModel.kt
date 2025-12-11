@@ -198,6 +198,7 @@ class EventDateViewModel @Inject constructor(
                 selectedServices = selectedServices.map { it.first.id to it.second.displayName }
             )
             bookingRepository.saveBooking(booking)
+            invalidate()
             Log.i(TAG, "Booking saved: $booking")
         }
     }
@@ -213,5 +214,16 @@ class EventDateViewModel @Inject constructor(
             bookingRepository.deleteBooking(id)
             loadBookings()
         }
+    }
+
+    fun invalidate() {
+        _selectedDate.value = null
+        _selectedImage.value = null
+        _selectedHours.value = 0
+        _selectedNumber.value = 0
+        _selectedServices.clear()
+        _selectedServiceId.value = null
+        _distance.value = null
+        _endPoint.value = null
     }
 }
