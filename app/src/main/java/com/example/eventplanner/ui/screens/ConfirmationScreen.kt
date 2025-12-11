@@ -59,7 +59,8 @@ fun ConfirmationScreen(viewModel: EventDateViewModel)
                         horizontalArrangement =  Arrangement.SpaceBetween
                     ) {
                         Text(service.first.displayName)
-                        Text("pe ${service.second.displayName}")
+                        Text("${service.second.displayName}")
+                        Text("pret ${viewModel.calculateSelectedServicePrice(service.first)}")
                     }
                     Divider()
                 }

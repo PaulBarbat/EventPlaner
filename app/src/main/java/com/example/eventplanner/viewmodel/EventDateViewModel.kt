@@ -226,4 +226,28 @@ class EventDateViewModel @Inject constructor(
         _distance.value = null
         _endPoint.value = null
     }
+
+    fun calculateSelectedServicePrice(service: ServiceEntry): Int {
+        val extraPersons = if (_selectedNumber.value > 100) {
+            service.pricePerExtraPerson * (_selectedNumber.value - 100)
+        } else {
+            0.0
+        }
+
+        val extraHours = if (_selectedHours.value > 4) {
+            _selectedNumber.value * service.pricePerPersonExtraHours * (_selectedHours.value - 4) / 2.0
+        } else {
+            0.0
+        }
+
+        return if(service.id == "ciggar"){
+            if(_selectedNumber.value>100)
+                service.pricePerExtraPerson.toInt()
+            else
+                service.basePrice
+        } else{
+            (service.basePrice + extraPersons + extraHours).toInt()
+        }
+    }
+
 }

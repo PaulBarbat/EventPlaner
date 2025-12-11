@@ -10,7 +10,10 @@ import kotlinx.serialization.json.Json
 data class ServiceEntry(
     val id: String,
     val displayName: String,
-    val imageResourceNames: List<String>
+    val imageResourceNames: List<String>,
+    val basePrice: Int,
+    val pricePerExtraPerson: Double,
+    val pricePerPersonExtraHours: Double
 )
 
 @SuppressLint("UnsafeOptInUsageError")
