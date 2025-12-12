@@ -6,10 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,7 +25,6 @@ fun AddBookingScreen(
     viewModel: EventDateViewModel) {
     val formState by viewModel.formState.collectAsState()
     val expanded = (formState>=3)
-    val padding = if (expanded) 0.dp else 16.dp
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -37,7 +35,7 @@ fun AddBookingScreen(
             Icon(
                 painter = painterResource(id = R.drawable.icon_olive),
                 contentDescription = null,
-                tint = androidx.compose.ui.graphics.Color.Unspecified,
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .size(300.dp)
                     .padding(bottom = 16.dp),
@@ -60,11 +58,11 @@ fun AddBookingScreen(
                 targetState = formState,
                 transitionSpec = {
                     if (targetState > initialState) {
-                        (slideInVertically { height -> height } + fadeIn()) with
-                        (slideOutVertically { height -> -height } + fadeOut())
+                        (slideInVertically { height -> height } + fadeIn()).togetherWith(
+                            slideOutVertically { height -> -height } + fadeOut())
                     } else {
-                        (slideInVertically { height -> -height } + fadeIn()) with
-                        (slideOutVertically { height -> height } + fadeOut())
+                        (slideInVertically { height -> -height } + fadeIn()).togetherWith(
+                            slideOutVertically { height -> height } + fadeOut())
                     }
                 },
                 label = "FormTransition"

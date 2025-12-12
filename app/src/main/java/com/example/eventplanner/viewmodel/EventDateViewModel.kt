@@ -1,5 +1,6 @@
 package com.example.eventplanner.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -7,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.data.ServiceEntry
 import com.example.eventplanner.data.ServicesConfig
-import com.example.eventplanner.data.ServicesConfigLoader
 import com.example.eventplanner.data.TuktukEntry
 import com.example.eventplanner.data.models.Booking
 import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
@@ -25,6 +25,7 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
+@SuppressLint("DiscouragedApi")
 @HiltViewModel
 class EventDateViewModel @Inject constructor(
     private val repository: EventRepository,
@@ -32,7 +33,7 @@ class EventDateViewModel @Inject constructor(
     @ApplicationContext private val appContext : Context
 ) : ViewModel() {
 
-    private val TAG = "ViewModel"
+    private val tag = "ViewModel"
 
     // --- NEW state for event form ---
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
@@ -54,7 +55,7 @@ class EventDateViewModel @Inject constructor(
     private val _suggestions = MutableStateFlow<List<Pair<String, LatLng>>>(emptyList())
     val suggestions: StateFlow<List<Pair<String, LatLng>>> = _suggestions
 
-    private val _startPoint = MutableStateFlow<LatLng>(LatLng(45.642680, 25.617590))
+    private val _startPoint = MutableStateFlow(LatLng(45.642680, 25.617590))
 
     val startPoint: StateFlow<LatLng> = _startPoint
 
@@ -63,10 +64,8 @@ class EventDateViewModel @Inject constructor(
     val endPoint: StateFlow<LatLng?> = _endPoint
 
     private val _config = MutableStateFlow<ServicesConfig?>(null)
-    val config: StateFlow<ServicesConfig?> = _config
 
     private val _imageRes = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val imageRes: StateFlow<Map<String, Int>> = _imageRes
 
     private val _selectedServiceId = MutableStateFlow<String?>(null)
     val selectedServiceId : StateFlow<String?> = _selectedServiceId
@@ -147,7 +146,7 @@ class EventDateViewModel @Inject constructor(
     }
 
     fun updateFormState(state: Int) {
-        Log.d(TAG,"update to ${state}")
+        Log.d(tag,"update to $state")
         _formState.value = state
     }
 
@@ -200,7 +199,7 @@ class EventDateViewModel @Inject constructor(
             )
             bookingRepository.saveBooking(booking)
             invalidate()
-            Log.i(TAG, "Booking saved: $booking")
+            Log.i(tag, "Booking saved: $booking")
         }
     }
 

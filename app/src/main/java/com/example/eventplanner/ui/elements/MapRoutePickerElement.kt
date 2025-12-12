@@ -1,5 +1,6 @@
 package com.example.eventplanner.ui.elements
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,13 +26,12 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun MapRoutePickerElement(
     viewModel: EventDateViewModel,
     apiKey: String
 ) {
-    val scope = rememberCoroutineScope()
-
     val startPoint by viewModel.startPoint.collectAsState()
     val endPoint by viewModel.endPoint.collectAsState()
 
