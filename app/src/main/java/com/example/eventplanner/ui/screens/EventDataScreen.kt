@@ -36,33 +36,11 @@ fun EventDataScreen(viewModel: EventDateViewModel)
     val selectedDate by viewModel.selectedDate.collectAsState()
     val selectedNumber by viewModel.selectedNumber.collectAsState()
     val selectedHours by viewModel.selectedHours.collectAsState()
-    var showCalendar by remember { mutableStateOf(false) }
-    val bookings by viewModel.bookings.collectAsState()
 
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Row(modifier= Modifier.padding(6.dp)
-            .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically){
-
-            Button(onClick = { showCalendar = true}) {
-                Text("Alege Data")
-            }
-        }
-
-        if(showCalendar) {
-            BookingCalendarElement(
-                bookings = bookings,
-                selectedDate = selectedDate,
-                onDateSelected = { date ->
-                    viewModel.updateDate(date)
-                    showCalendar = false // hide after picking
-                }
-            )
-        }
         OutlinedTextField(
             value = selectedNumber.toString(),
             onValueChange = { input ->
@@ -83,12 +61,34 @@ fun EventDataScreen(viewModel: EventDateViewModel)
             numberList = listOf(4, 6, 8)
         )
 
-        Text("Data Evenimentului: $selectedDate")
+        if(selectedDate!=null){
+            Text("Data Evenimentului: $selectedDate")
+        }
         Text("Numar de persoane: $selectedNumber")
         Text("Ore: $selectedHours")
 
-        Button(onClick = { viewModel.updateFormState(1) }) {
-            Text("Continue")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Button(
+                onClick = { viewModel.updateFormState(1)},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp)
+            ) {
+                Text("Back")
+            }
+            Button(
+                onClick = { viewModel.updateFormState(3)},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp)
+            ) {
+                Text("Continue")
+            }
         }
     }
 }

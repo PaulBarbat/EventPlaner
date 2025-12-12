@@ -44,7 +44,7 @@ class EventDateViewModel @Inject constructor(
     private val _selectedHours = MutableStateFlow(0)
     val selectedHours: StateFlow<Int> = _selectedHours.asStateFlow()
 
-    private val _formState = MutableStateFlow(0)
+    private val _formState = MutableStateFlow(1)
     val formState: StateFlow<Int> = _formState.asStateFlow()
 
     // --- Existing route state ---
@@ -147,6 +147,7 @@ class EventDateViewModel @Inject constructor(
     }
 
     fun updateFormState(state: Int) {
+        Log.d(TAG,"update to ${state}")
         _formState.value = state
     }
 

@@ -21,7 +21,7 @@ fun LocationScreen(viewModel: EventDateViewModel)
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Button(onClick = { viewModel.updateFormState(1) }) {
+        Button(onClick = { viewModel.updateFormState(2) }) {
             Text("Back")
         }
         MapRoutePickerElement(viewModel, apiKey = BuildConfig.ORS_KEY)

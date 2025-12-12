@@ -33,16 +33,22 @@ import java.time.LocalDate
 fun BookingCalendarElement(
     bookings: List<Booking>,
     selectedDate: LocalDate?,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate) -> Unit,
+    onSkip: () -> Unit
 ) {
+    var isDateSelected by remember { mutableStateOf(false)}
     val today = LocalDate.now()
     var currentMonth by remember { mutableStateOf(today.withDayOfMonth(1)) }
     val bookedDates = bookings.mapNotNull { runCatching {LocalDate.parse(it.date)}.getOrNull()}
 
+    val firstDay = currentMonth.dayOfWeek.value %7
+    val daysInMonth = currentMonth.lengthOfMonth()
+    val days = (1..daysInMonth).map { currentMonth.withDayOfMonth(it)}
+    var ldate by remember { mutableStateOf(today) }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //month, year abd month navigations
         Row(
            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth().padding(8.dp)
@@ -51,7 +57,6 @@ fun BookingCalendarElement(
             Text("${currentMonth.month.name} ${currentMonth.year}")
             Button(onClick = { currentMonth = currentMonth.plusMonths(1)}) { Text(">")}
         }
-        //header with days of the week
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -61,18 +66,13 @@ fun BookingCalendarElement(
             }
         }
 
-        //days grid
-        val firstDay = currentMonth.dayOfWeek.value %7
-        val daysInMonth = currentMonth.lengthOfMonth()
-        val days = (1..daysInMonth).map { currentMonth.withDayOfMonth(it)}
-
         LazyVerticalGrid(columns = GridCells.Fixed(7)){
             //offset for first day
             items(firstDay) { Spacer(Modifier.size(40.dp))}
             //days
             items(days) { date ->
                 val isBooked = bookedDates.count { it == date }
-                val isSelected = date == selectedDate
+                val isSelected = date == ldate
                 val bgColor = when{
                     isSelected -> Color(0xFF3B7A00)
                     isBooked > 0-> Color(0xFFFFC0CB)
@@ -83,11 +83,32 @@ fun BookingCalendarElement(
                         .padding(4.dp)
                         .size(40.dp)
                         .background(bgColor, RoundedCornerShape(8.dp))
-                        .clickable { onDateSelected(date) },
+                        .clickable { ldate = date
+                                   isDateSelected=true},
                     contentAlignment = Alignment.Center
                 ) {
                     Text(date.dayOfMonth.toString())
                 }
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            Button(onClick = { onSkip() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp)) {
+                Text("Skip")
+            }
+            Button(onClick = { onDateSelected(ldate) },
+                enabled = isDateSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp)) {
+                Text("Ok")
             }
         }
     }

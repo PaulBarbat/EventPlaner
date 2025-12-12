@@ -25,7 +25,7 @@ import com.example.eventplanner.viewmodel.EventDateViewModel
 fun AddBookingScreen(
     viewModel: EventDateViewModel) {
     val formState by viewModel.formState.collectAsState()
-    val expanded = (formState>=2)
+    val expanded = (formState>=3)
     val padding = if (expanded) 0.dp else 16.dp
     Box(
         modifier = Modifier
@@ -33,68 +33,58 @@ fun AddBookingScreen(
             .background(Color(0xFF676937)),
         contentAlignment = Alignment.TopCenter
     ) {
-        Column(
+        if(!expanded) {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_olive),
+                contentDescription = null,
+                tint = androidx.compose.ui.graphics.Color.Unspecified,
+                modifier = Modifier
+                    .size(300.dp)
+                    .padding(bottom = 16.dp),
+            )
+        }
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF9EC156)),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if(!expanded) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_olive),
-                    contentDescription = null,
-                    tint = androidx.compose.ui.graphics.Color.Unspecified,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .padding(bottom = 16.dp),
-                )
-            }
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFF9EC156)
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(
+                    top = if (!expanded)200.dp else 0.dp, // optional space for icon
+                    start = 0.dp,
+                    end = 0.dp,
+                    bottom = 0.dp
                 ),
-                modifier = if (expanded) {
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+            elevation = CardDefaults.cardElevation(8.dp)
+        ) {
+            AnimatedContent(
+                targetState = formState,
+                transitionSpec = {
+                    if (targetState > initialState) {
+                        (slideInVertically { height -> height } + fadeIn()) with
+                        (slideOutVertically { height -> -height } + fadeOut())
+                    } else {
+                        (slideInVertically { height -> -height } + fadeIn()) with
+                        (slideOutVertically { height -> height } + fadeOut())
                     }
-                    else
-                    {
-                        Modifier
-                            .fillMaxWidth(0.9f)
-                            .wrapContentHeight()
-                    },
-                elevation = CardDefaults.cardElevation(8.dp)
-            ) {
-                AnimatedContent(
-                    targetState = formState,
-                    transitionSpec = {
-                        if (targetState > initialState) {
-                            (slideInVertically { height -> height } + fadeIn()) with
-                            (slideOutVertically { height -> -height } + fadeOut())
-                        } else {
-                            (slideInVertically { height -> -height } + fadeIn()) with
-                            (slideOutVertically { height -> height } + fadeOut())
-                        }
-                    },
-                    label = "FormTransition"
-                ) { step ->
-                    when (step) {
-                        0 -> EventDataScreen (
-                            viewModel = viewModel
-                        )
-                        1 -> LocationScreen (
-                            viewModel = viewModel
-                        )
-                        2 -> ServiceListScreen (
-                            viewModel = viewModel
-                        )
-                        3 -> ConfirmationScreen (
-                            viewModel = viewModel
-                        )
-                    }
-
+                },
+                label = "FormTransition"
+            ) { step ->
+                when (step) {
+                    1->CalendarScreen(
+                        viewModel = viewModel
+                    )
+                    2 -> EventDataScreen (
+                        viewModel = viewModel
+                    )
+                    3 -> LocationScreen (
+                        viewModel = viewModel
+                    )
+                    4 -> ServiceListScreen (
+                        viewModel = viewModel
+                    )
+                    5 -> ConfirmationScreen (
+                        viewModel = viewModel
+                    )
                 }
             }
         }

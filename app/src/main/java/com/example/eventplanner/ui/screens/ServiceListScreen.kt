@@ -43,7 +43,7 @@ fun ServiceListScreen(viewModel: EventDateViewModel)
             .padding(top = 20.dp,bottom = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(onClick = { viewModel.updateFormState(1) },
+        Button(onClick = { viewModel.updateFormState(3) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)) {
@@ -115,7 +115,7 @@ fun ServiceListScreen(viewModel: EventDateViewModel)
                 .padding(top = 16.dp)) {
             Text("Add Selected Service")
         }
-        Button(onClick = { viewModel.updateFormState(3) },
+        Button(onClick = { viewModel.updateFormState(5) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)) {
