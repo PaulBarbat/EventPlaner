@@ -68,8 +68,6 @@ fun MapRoutePickerElement(
                 viewModel.updateEndPoint(latLng)
             }
         ) {
-            Marker(state = MarkerState(position = startPoint), title = "Start")
-
             LaunchedEffect(endPoint) {
                 endPoint?.let {
                     cameraPositionState.animate(
@@ -81,18 +79,8 @@ fun MapRoutePickerElement(
 
             endPoint?.let {
                 Marker(state = MarkerState(position = it), title = "End")
+                viewModel.fetchRoute(startPoint, endPoint!!, apiKey)
             }
-        }
-
-        Button(
-            onClick = {
-                if (endPoint != null) {
-                    viewModel.fetchRoute(startPoint, endPoint!!, apiKey)
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Calculate Route Distance")
         }
 
         routeDistance?.let {

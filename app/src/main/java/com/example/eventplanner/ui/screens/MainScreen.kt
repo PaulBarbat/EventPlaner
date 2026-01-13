@@ -29,7 +29,6 @@ fun MainScreen() {
                         selected = currentRoute == item.route,
                         onClick = {
                             navController.navigate(item.route) {
-                                // Avoid building up a huge backstack
                                 popUpTo(navController.graph.startDestinationId) { saveState = true }
                                 launchSingleTop = true
                                 restoreState = true

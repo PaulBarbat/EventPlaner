@@ -14,9 +14,10 @@ import com.example.eventplanner.viewmodel.EventDateViewModel
 fun BottomNavHost(navController: NavHostController, padding: PaddingValues, viewModel: EventDateViewModel) {
     NavHost(
         navController = navController,
-        startDestination = BottomNavItem.AddBooking.route,
+        startDestination = BottomNavItem.Home.route,
         modifier = Modifier.padding(padding)
     ) {
+        composable(BottomNavItem.Home.route) { HomeScreen() }
         composable(BottomNavItem.Settings.route) { SettingsScreen(viewModel) }
         composable(BottomNavItem.AddBooking.route) { AddBookingScreen(viewModel) }
         composable(BottomNavItem.Bookings.route) { BookingsScreen(viewModel) }

@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,10 @@ fun CalendarScreen(viewModel: EventDateViewModel){
     val firstDay = currentMonth.dayOfWeek.value %7
     val daysInMonth = currentMonth.lengthOfMonth()
     val days = (1..daysInMonth).map { currentMonth.withDayOfMonth(it)}
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBookings()
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
@@ -72,8 +77,8 @@ fun CalendarScreen(viewModel: EventDateViewModel){
                 val isBooked = bookedDates.count { it == date }
                 val isSelected = date == selectedDate
                 val bgColor = when{
-                    isSelected -> Color(0xFF3B7A00)
-                    isBooked > 0-> Color(0xFFFFC0CB)
+                    isSelected -> Color(0xFF03A9F4)
+                    isBooked > 0-> Color(0xFFFFEB3B)
                     else -> Color(0xFFE0E0E0)
                 }
                 Box(
