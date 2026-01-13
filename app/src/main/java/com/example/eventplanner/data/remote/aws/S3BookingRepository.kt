@@ -15,17 +15,17 @@ class S3BookingRepository(
 ) : BookingRepository {
 
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true}
-    private val TAG = "S3BookingRepository"
+    private val tag = "S3BookingRepository"
 
     override suspend fun saveBooking(booking: Booking) {
         val all = getAllBookings() + booking
         uploadToS3(json.encodeToString(all))
-        Log.i(TAG, "saveBooking")
+        Log.i(tag, "saveBooking")
     }
 
     override suspend fun getAllBookings(): List<Booking> = try {
         val remoteData = downloadFromS3()
-        Log.i(TAG, "getAllBookings")
+        Log.i(tag, "getAllBookings")
         json.decodeFromString(remoteData)
     } catch(e: Exception) {
         Log.e("S3BookingRepository", "Failed to read S3 file", e)
@@ -35,12 +35,12 @@ class S3BookingRepository(
     override suspend fun deleteBooking(id: String) {
         val updated = getAllBookings().filterNot { it.id == id}
         uploadToS3(json.encodeToString(updated))
-        Log.i(TAG, "Delete booking ${id}")
+        Log.i(tag, "Delete booking $id")
     }
 
     private suspend fun downloadFromS3(): String = withContext(Dispatchers.IO) {
         val connection = URL(s3Url).openConnection() as HttpURLConnection
-        Log.i(TAG, "Download from S3")
+        Log.i(tag, "Download from S3")
         connection.requestMethod = "GET"
         connection.inputStream.bufferedReader().readText()
     }
@@ -51,7 +51,7 @@ class S3BookingRepository(
         connection.requestMethod = "PUT"
         connection.setRequestProperty("Content-Type", "application/json")
         connection.outputStream.use { it.write(jsonText.toByteArray())}
-        Log.i(TAG, "Upload to S3: ${connection.responseCode}")
+        Log.i(tag, "Upload to S3: ${connection.responseCode}")
     }
 
 }

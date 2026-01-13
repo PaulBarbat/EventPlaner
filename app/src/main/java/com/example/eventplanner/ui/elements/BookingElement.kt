@@ -1,5 +1,6 @@
 package com.example.eventplanner.ui.elements
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun BookingItem(
     booking: com.example.eventplanner.data.models.Booking,

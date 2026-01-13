@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.net.HttpURLConnection
@@ -19,7 +18,6 @@ object ServicesRemoteLoader{
     suspend fun loadConfig(context: Context): Pair<ServicesConfig?, Boolean>{
         return withContext(Dispatchers.IO) {
             val file = File(context.filesDir, LOCAL_FILE)
-            var usedLocal = false
             try{
                 val connection = URL(REMOTE_URL).openConnection() as HttpURLConnection
                 connection.connectTimeout = 5000
@@ -34,14 +32,12 @@ object ServicesRemoteLoader{
                     return@withContext config to false
                 } else {
                     Log.w("ServicesRemoteLoader", "HTTP ${connection.responseCode}, using local file.")
-                    usedLocal=true;
                 }
             } catch (e: Exception) {
                 Log.e("ServicesRemoteLoader", "Failed to fetch remote config", e)
-                usedLocal = true
-            }
+                }
 
-            if( usedLocal && file.exists()) {
+            if(file.exists()) {
                 val localData = file.readText()
                 val config = json.decodeFromString<ServicesConfig>(localData)
                 return@withContext config to true

@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +44,7 @@ fun ServiceListScreen(viewModel: EventDateViewModel)
             .padding(top = 20.dp,bottom = 10.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(onClick = { viewModel.updateFormState(2) },
+        Button(onClick = { viewModel.updateFormState(3) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)) {
@@ -71,7 +72,7 @@ fun ServiceListScreen(viewModel: EventDateViewModel)
                             .clickable { viewModel.selectService(svc.id)},
                         tonalElevation = if (isSelected) 4.dp else 0.dp
                     )
-                    Divider()
+                    HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
                 }
             }
             //Images
@@ -115,7 +116,7 @@ fun ServiceListScreen(viewModel: EventDateViewModel)
                 .padding(top = 16.dp)) {
             Text("Add Selected Service")
         }
-        Button(onClick = { viewModel.updateFormState(4) },
+        Button(onClick = { viewModel.updateFormState(5) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)) {

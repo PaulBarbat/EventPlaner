@@ -1,5 +1,6 @@
 package com.example.eventplanner.viewmodel
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
@@ -7,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.data.ServiceEntry
 import com.example.eventplanner.data.ServicesConfig
-import com.example.eventplanner.data.ServicesConfigLoader
 import com.example.eventplanner.data.TuktukEntry
 import com.example.eventplanner.data.models.Booking
 import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
@@ -25,6 +25,7 @@ import java.time.LocalDate
 import java.util.UUID
 import javax.inject.Inject
 
+@SuppressLint("DiscouragedApi")
 @HiltViewModel
 class EventDateViewModel @Inject constructor(
     private val repository: EventRepository,
@@ -32,7 +33,7 @@ class EventDateViewModel @Inject constructor(
     @ApplicationContext private val appContext : Context
 ) : ViewModel() {
 
-    private val TAG = "ViewModel"
+    private val tag = "ViewModel"
 
     // --- NEW state for event form ---
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
@@ -44,7 +45,7 @@ class EventDateViewModel @Inject constructor(
     private val _selectedHours = MutableStateFlow(0)
     val selectedHours: StateFlow<Int> = _selectedHours.asStateFlow()
 
-    private val _formState = MutableStateFlow(0)
+    private val _formState = MutableStateFlow(1)
     val formState: StateFlow<Int> = _formState.asStateFlow()
 
     // --- Existing route state ---
@@ -54,7 +55,7 @@ class EventDateViewModel @Inject constructor(
     private val _suggestions = MutableStateFlow<List<Pair<String, LatLng>>>(emptyList())
     val suggestions: StateFlow<List<Pair<String, LatLng>>> = _suggestions
 
-    private val _startPoint = MutableStateFlow<LatLng>(LatLng(45.642680, 25.617590))
+    private val _startPoint = MutableStateFlow(LatLng(45.642680, 25.617590))
 
     val startPoint: StateFlow<LatLng> = _startPoint
 
@@ -63,10 +64,8 @@ class EventDateViewModel @Inject constructor(
     val endPoint: StateFlow<LatLng?> = _endPoint
 
     private val _config = MutableStateFlow<ServicesConfig?>(null)
-    val config: StateFlow<ServicesConfig?> = _config
 
     private val _imageRes = MutableStateFlow<Map<String, Int>>(emptyMap())
-    val imageRes: StateFlow<Map<String, Int>> = _imageRes
 
     private val _selectedServiceId = MutableStateFlow<String?>(null)
     val selectedServiceId : StateFlow<String?> = _selectedServiceId
@@ -80,7 +79,12 @@ class EventDateViewModel @Inject constructor(
     private val _selectedServices = mutableStateListOf<Pair<ServiceEntry, TuktukEntry>>()
     val selectedServices: List<Pair<ServiceEntry, TuktukEntry>> = _selectedServices
 
+
+    private val _bookings = MutableStateFlow<List<Booking>>(emptyList())
+    val bookings: StateFlow<List<Booking>> = _bookings
+
     init {
+        loadBookings()
         viewModelScope.launch {
             val (config, isLocal) = ServicesRemoteLoader.loadConfig(appContext)
             _configOutdated.value = isLocal
@@ -142,6 +146,7 @@ class EventDateViewModel @Inject constructor(
     }
 
     fun updateFormState(state: Int) {
+        Log.d(tag,"update to $state")
         _formState.value = state
     }
 
@@ -193,7 +198,56 @@ class EventDateViewModel @Inject constructor(
                 selectedServices = selectedServices.map { it.first.id to it.second.displayName }
             )
             bookingRepository.saveBooking(booking)
-            Log.i(TAG, "Booking saved: $booking")
+            invalidate()
+            Log.i(tag, "Booking saved: $booking")
         }
     }
+
+    fun loadBookings() {
+        viewModelScope.launch {
+            _bookings.value = bookingRepository.getAllBookings()
+        }
+    }
+
+    fun deleteBooking(id: String) {
+        viewModelScope.launch {
+            bookingRepository.deleteBooking(id)
+            loadBookings()
+        }
+    }
+
+    fun invalidate() {
+        _selectedDate.value = null
+        _selectedImage.value = null
+        _selectedHours.value = 0
+        _selectedNumber.value = 0
+        _selectedServices.clear()
+        _selectedServiceId.value = null
+        _distance.value = null
+        _endPoint.value = null
+    }
+
+    fun calculateSelectedServicePrice(service: ServiceEntry): Int {
+        val extraPersons = if (_selectedNumber.value > 100) {
+            service.pricePerExtraPerson * (_selectedNumber.value - 100)
+        } else {
+            0.0
+        }
+
+        val extraHours = if (_selectedHours.value > 4) {
+            _selectedNumber.value * service.pricePerPersonExtraHours * (_selectedHours.value - 4) / 2.0
+        } else {
+            0.0
+        }
+
+        return if(service.id == "ciggar"){
+            if(_selectedNumber.value>100)
+                service.pricePerExtraPerson.toInt()
+            else
+                service.basePrice
+        } else{
+            (service.basePrice + extraPersons + extraHours).toInt()
+        }
+    }
+
 }
