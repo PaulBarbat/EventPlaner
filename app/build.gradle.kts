@@ -99,6 +99,10 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    //Google Places
+    implementation("com.google.android.libraries.places:places:3.4.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
 }
 
 secrets {

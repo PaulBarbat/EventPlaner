@@ -175,17 +175,15 @@ class EventDateViewModel @Inject constructor(
     fun searchPlaces(query: String) {
         viewModelScope.launch {
             try {
-                val response = repository.searchPlaces(query)
-                _suggestions.value = response.features.map { f ->
-                    val coords = f.geometry.coordinates
-                    val name = f.properties.name ?: "Unknown"
-                    Pair(name, LatLng(coords[1], coords[0]))
-                }
+                Log.d(tag,"Try to search $query")
+                _suggestions.value = repository.searchPlaces(query)
+                Log.d(tag,"Suggestions is ${_suggestions.value.get(0).first} ${_suggestions.value.size} ")
             } catch (e: Exception) {
-                Log.e("Photon", "Failed to search places", e)
+                Log.e("Places", "Failed to search places", e)
             }
         }
     }
+
 
     fun saveBooking() {
         viewModelScope.launch {
