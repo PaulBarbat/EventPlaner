@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eventplanner.data.ServiceEntry
@@ -14,6 +15,9 @@ import com.example.eventplanner.data.remote.aws.ServicesRemoteLoader
 import com.example.eventplanner.data.remote.ors.ORSRequest
 import com.example.eventplanner.data.repository.BookingRepository
 import com.example.eventplanner.data.repository.EventRepository
+import com.example.eventplanner.ui.theme.EventPlannerTheme
+import com.example.eventplanner.ui.theme.ThemeManager
+import com.example.eventplanner.ui.theme.UITheme
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -34,6 +38,10 @@ class EventDateViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val tag = "ViewModel"
+
+    val themeManager : ThemeManager = ThemeManager()
+
+    val theme: StateFlow<EventPlannerTheme> = themeManager.theme
 
     // --- NEW state for event form ---
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
@@ -84,6 +92,7 @@ class EventDateViewModel @Inject constructor(
     val bookings: StateFlow<List<Booking>> = _bookings
 
     init {
+        themeManager.changeTheme(UITheme.BLUE_DARK)
         loadBookings()
         viewModelScope.launch {
             val (config, isLocal) = ServicesRemoteLoader.loadConfig(appContext)
@@ -248,4 +257,7 @@ class EventDateViewModel @Inject constructor(
         }
     }
 
+    fun changeTheme(theme:UITheme) {
+        themeManager.changeTheme(theme)
+    }
 }

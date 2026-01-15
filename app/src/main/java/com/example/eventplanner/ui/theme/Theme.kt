@@ -1,6 +1,5 @@
 package com.example.eventplanner.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +9,27 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Color
+
+data class EventPlannerTheme(
+    val primary : Color,
+    val secondary : Color,
+    val tertiary : Color,
+    val background : Color,
+    val surface : Color,
+    val onPrimary : Color,
+    val onSecondary : Color,
+)
+
+enum class UITheme {
+    OLIVE_LIGHT,
+    OLIVE_DARK,
+    BLUE_LIGHT,
+    BLUE_DARK,
+    MINT_LIGHT,
+    MINT_DARK
+}
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

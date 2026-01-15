@@ -77,9 +77,9 @@ fun CalendarScreen(viewModel: EventDateViewModel){
                 val isBooked = bookedDates.count { it == date }
                 val isSelected = date == selectedDate
                 val bgColor = when{
-                    isSelected -> Color(0xFF03A9F4)
-                    isBooked > 0-> Color(0xFFFFEB3B)
-                    else -> Color(0xFFE0E0E0)
+                    isSelected -> viewModel.theme.collectAsState().value.primary
+                    isBooked > 0-> viewModel.theme.collectAsState().value.secondary
+                    else -> viewModel.theme.collectAsState().value.tertiary
                 }
                 Box(
                     modifier = Modifier
