@@ -17,7 +17,7 @@ fun BottomNavHost(navController: NavHostController, padding: PaddingValues, view
         startDestination = BottomNavItem.Home.route,
         modifier = Modifier.padding(padding)
     ) {
-        composable(BottomNavItem.Home.route) { HomeScreen() }
+        composable(BottomNavItem.Home.route) { HomeScreen(viewModel) }
         composable(BottomNavItem.Settings.route) { SettingsScreen(viewModel) }
         composable(BottomNavItem.AddBooking.route) { AddBookingScreen(viewModel) }
         composable(BottomNavItem.Bookings.route) { BookingsScreen(viewModel) }

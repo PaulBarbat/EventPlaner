@@ -21,15 +21,15 @@ import com.example.eventplanner.viewmodel.EventDateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: EventDateViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF676937)),
+            .background(viewModel.theme.collectAsState().value.secondary),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.icon_olive),
+            painter = painterResource(id = viewModel.theme.collectAsState().value.icon),
             contentDescription = null,
             tint = Color.Unspecified,
             modifier = Modifier

@@ -3,6 +3,7 @@ package com.example.eventplanner.ui.theme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
+import com.example.eventplanner.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,8 @@ class ThemeManager {
         background = Color(0xFFF0F5E1),
         surface = Color(0xFFFFFFFF),
         onPrimary = Color.White,
-        onSecondary = Color.White
+        onSecondary = Color.White,
+        icon = R.drawable.icon_olive
     )
 
     private val OliveGreenDark = EventPlannerTheme(
@@ -28,7 +30,8 @@ class ThemeManager {
         background = Color(0xFF1A1A1A),
         surface = Color(0xFF2B2B2B),
         onPrimary = Color.Black,
-        onSecondary = Color.Black
+        onSecondary = Color.Black,
+        icon = R.drawable.icon_black
     )
 
     private val BlueLight = EventPlannerTheme(
@@ -38,7 +41,8 @@ class ThemeManager {
         background = Color(0xFFEAF2FA),
         surface = Color(0xFFFFFFFF),
         onPrimary = Color.White,
-        onSecondary = Color.White
+        onSecondary = Color.White,
+        icon = R.drawable.icon_white
     )
 
     private val BlueDark = EventPlannerTheme(
@@ -48,7 +52,8 @@ class ThemeManager {
         background = Color(0xFF121212),
         surface = Color(0xFF1E1E1E),
         onPrimary = Color.White,
-        onSecondary = Color.White
+        onSecondary = Color.White,
+        icon = R.drawable.icon_black
     )
 
     private val MintLight = EventPlannerTheme(
@@ -58,7 +63,8 @@ class ThemeManager {
         background = Color(0xFF121212),
         surface = Color(0xFF1E1E1E),
         onPrimary = Color.White,
-        onSecondary = Color.White
+        onSecondary = Color.White,
+        icon = R.drawable.icon_white
     )
 
     private val MintDark = EventPlannerTheme(
@@ -68,7 +74,8 @@ class ThemeManager {
         background = Color(0xFF121212),
         surface = Color(0xFF1E1E1E),
         onPrimary = Color.White,
-        onSecondary = Color.White
+        onSecondary = Color.White,
+        icon = R.drawable.icon_red
     )
 
     private val _selectedTheme = MutableStateFlow<EventPlannerTheme>(OliveGreenLight)

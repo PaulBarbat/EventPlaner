@@ -28,12 +28,12 @@ fun AddBookingScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF676937)),
+            .background(viewModel.theme.collectAsState().value.secondary),
         contentAlignment = Alignment.TopCenter
     ) {
         if(!expanded) {
             Icon(
-                painter = painterResource(id = R.drawable.icon_olive),
+                painter = painterResource(id = viewModel.theme.collectAsState().value.icon),
                 contentDescription = null,
                 tint = Color.Unspecified,
                 modifier = Modifier
@@ -42,7 +42,7 @@ fun AddBookingScreen(
             )
         }
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF9EC156)),
+            colors = CardDefaults.cardColors(containerColor = viewModel.theme.collectAsState().value.primary),
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)

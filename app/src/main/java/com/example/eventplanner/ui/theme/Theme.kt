@@ -19,6 +19,7 @@ data class EventPlannerTheme(
     val surface : Color,
     val onPrimary : Color,
     val onSecondary : Color,
+    val icon : Int
 )
 
 enum class UITheme {
